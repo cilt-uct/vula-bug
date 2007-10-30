@@ -68,6 +68,8 @@ my $msgid = $entity->head->get('message-id');
 
 die "Invalid email" if !($subject =~ /^Bug\sReport:/);
 
+my $hascomment = ($subject =~ /(comment)/);
+
 chomp $from;
 chomp $subject;
 
@@ -171,7 +173,9 @@ if ($msgtxt =~ /user\scomment:\s([\w\s\n-.%!\/@\:\.]+)\nstack\strace:/) {
 # log in database                                 #
 ###################################################
 
-if ($digest ne "") {
+# Don't save bug reports that have empty comments (as a pre-comment bug report will already have been saved)
+
+if (($digest ne "") && !($hascomment && $comment eq ""))  {
 	### Connect to dbs
 
 	my $dbh = DBI->connect("DBI:mysql:database=$dbname;host=$host;port=3306", $user, $password)
@@ -186,8 +190,10 @@ if ($digest ne "") {
 
 	$sth->finish;
 	$dbh->disconnect;
+
+#	print "Saved in db.\n";
 } else {
-	die "Not a bug report";
+#	print "Not saved in db.\n";
 }
 
 ## functions ##
