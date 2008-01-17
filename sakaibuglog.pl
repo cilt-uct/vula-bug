@@ -21,6 +21,7 @@ CREATE TABLE `SAKAI_BUGS` (
   `BODY` text,
   `COMMENT` text,
   `TOOL` varchar(255) default NULL,
+  `SITE_ID` varchar(255) default NULL,
   PRIMARY KEY  (`BUG_ID`)
 ) ENGINE=InnoDB AUTO_INCREMENT=51 DEFAULT CHARSET=utf8
 
