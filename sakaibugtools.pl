@@ -1,0 +1,70 @@
+#! /usr/bin/perl
+
+# Populate tool id in SAKAI_BUGS table
+#
+
+use DBI;
+
+require "/usr/local/sakaiconfig/dbauth.pl";
+require "/usr/local/sakaiconfig/dbbugs.pl";
+
+(my $host1, my $dbname1, my $user1, my $password1)= getProductionDbAuth ();
+(my $host2, my $dbname2, my $user2, my $password2)= getBugDbAuth ();
+
+my $debug = 0;
+
+my $currentversion = "2.5";
+
+### Connect to dbs
+
+$dbh1 = DBI->connect("DBI:mysql:database=$dbname1;host=$host1;port=3306", $user1, $password1) 
+	|| die "Could not connect to production database $dbname1: $DBI::errstr";
+
+$dbh2 = DBI->connect("DBI:mysql:database=$dbname2;host=$host2;port=3306", $user2, $password2)
+	|| die "Could not connect to bugs database $dbname2: $DBI::errstr";
+
+### Pull in all the production tool IDs
+  my $toolreg = $dbh1->selectall_hashref('SELECT TOOL_ID, SITE_ID, REGISTRATION FROM SAKAI_SITE_TOOL', 'TOOL_ID');
+
+  my $eventsql = "select distinct REQPATH from SAKAI_BUGS WHERE VERSION=? and TOOL is NULL";
+
+  my $sth1 = $dbh2->prepare($eventsql) or die "Couldn't prepare statement: " . $dbh2->errstr;
+  $sth1->execute($currentversion)             # Execute the query
+     or die "Couldn't execute statement: " . $sth->errstr;
+
+  my $updsql = "update SAKAI_BUGS SET TOOL = ?, SITE_ID = ? WHERE VERSION = ? AND REQPATH LIKE ?";
+  my $sth2 = $dbh2->prepare($updsql)  or die "Couldn't prepare statement: " . $dbh2->errstr;
+
+  # Find tool names for placement IDs
+  while (@data = $sth1->fetchrow_array()) {
+
+	my $request = $data[0];
+
+#	print "got path: " . $data[0] . "\n";
+
+	if ($request =~ /^\/portal\/tool\/([A-Za-z0-9-!]*)[?]*/) {
+		my $toolid = $1;
+#		print "  got tool id: " . $1 . "\n";
+
+		my $registration = $toolreg->{$toolid}->{'REGISTRATION'};
+                my $siteid = $toolreg->{$toolid}->{'SITE_ID'};
+
+		if (defined($registration) && $registration ne "") {
+			$sth2->execute($registration, $siteid, $currentversion, "/portal/tool/$toolid%");
+
+#		print "  got tool id: $toolid site id: $siteid reg: $registration\n";
+
+		}
+
+	} else {
+		## e.g. presence, xlogin, help - ignoring these for now
+#			print "not a tool path: $request\n";
+	}
+
+  }
+
+$sth1->finish();
+$sth2->finish();
+
+### All done.
+
