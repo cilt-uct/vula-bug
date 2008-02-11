@@ -22,6 +22,8 @@ CREATE TABLE `SAKAI_BUGS` (
   `COMMENT` text,
   `TOOL` varchar(255) default NULL,
   `SITE_ID` varchar(255) default NULL,
+  `USER_AGENT` varchar(255) default NULL,
+  `CAUSED_BY` varchar(255) default NULL,
   PRIMARY KEY  (`BUG_ID`)
 ) ENGINE=InnoDB AUTO_INCREMENT=51 DEFAULT CHARSET=utf8
 
@@ -116,6 +118,8 @@ my $server;
 my $datetime;
 my $reqpath;
 my $comment;
+my $ua;
+my $causedby;
 
 if ($msgtxt =~ /user:\s([A-Za-z0-9@]+)\s/) {
   $eid = $1;
@@ -162,10 +166,20 @@ if ($msgtxt =~ /server:\s([A-Za-z0-9%\/-]+)/) {
 # print "found server: $server\n";
 }
 
+if ($msgtxt =~ /user-agent:\s(.*)\n/) {
+  $ua = $1;
+# print "found ua: $ua\n";
+}
+
 if ($msgtxt =~ /user\scomment:\s([\w\s\n-.%!\/@\:\.]+)\nstack\strace:/) {
   $comment = $1;
   $comment =~ s/^\n+|\n+$//g;
 # print "found comment: [$comment]\n";
+}
+
+while ($msgtxt =~ m/caused\sby:\s(.*)\n/g) {
+  $causedby = $1;
+# print "found caused-by: $causedby\n";
 }
 
 #print "End.\n";
@@ -184,10 +198,10 @@ if (($digest ne "") && !($hascomment && $comment eq ""))  {
 
 	## For now we just use the current date/time to avoid parsing the mm-ddd-yy date format
 
-	my $insertsql = "INSERT INTO SAKAI_BUGS (BUG_DATE, EID, EMAIL, SESSION, DIGEST, VERSION, REVISION, SERVER, REQPATH, BODY, COMMENT ) VALUES (NOW(), ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+	my $insertsql = "INSERT INTO SAKAI_BUGS (BUG_DATE, EID, EMAIL, SESSION, DIGEST, VERSION, REVISION, SERVER, REQPATH, BODY, COMMENT, USER_AGENT, CAUSED_BY ) VALUES (NOW(), ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 	my $sth = $dbh->prepare($insertsql) or die "Couldn't prepare statement: " . $dbh->errstr;
 
-	$sth->execute($eid, $email, $session, $digest, $version, $revision, $server, $reqpath, $msgtxt, $comment);
+	$sth->execute($eid, $email, $session, $digest, $version, $revision, $server, $reqpath, $msgtxt, $comment, $ua, $causedby);
 
 	$sth->finish;
 	$dbh->disconnect;
