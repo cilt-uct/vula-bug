@@ -123,7 +123,7 @@ my $ua;
 my $causedby;
 my $causedat;
 
-if ($msgtxt =~ /user:\s([A-Za-z0-9@]+)\s/) {
+if ($msgtxt =~ /user:\s([A-Za-z0-9\@\.]+)\s/) {
   $eid = $1;
 # print "found eid: $eid\n";
 }
@@ -158,7 +158,7 @@ if ($msgtxt =~ /time:\s([A-Za-z0-9-]+)\s(\d{2}:\d{2}:\d{2})/) {
 # print "found datetime: $datetime\n";
 }
 
-if ($msgtxt =~ /request-path:\s([A-Za-z0-9.?=%&\/-]+)/) {
+if ($msgtxt =~ /request-path:\s([A-Za-z0-9.?=_%&\/-]+)/) {
   $reqpath = $1;
 # print "found reqpath: $reqpath\n";
 }

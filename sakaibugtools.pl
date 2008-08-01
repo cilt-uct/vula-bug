@@ -57,6 +57,17 @@ $dbh2 = DBI->connect("DBI:mysql:database=$dbname2;host=$host2;port=3306", $user2
 		}
 
 	} else {
+		my @pathelem = split("/", $request);
+		my $registration;
+
+		if (($pathelem[1] eq "portal") || ($pathelem[1] eq "direct") || ($pathelem[1] eq "access")) {
+			$registration = "url:" . $pathelem[1] . ":" . $pathelem[2];
+		} else {
+			$registration = "url:" . $pathelem[1];
+		}
+
+		$sth2->execute($registration, null, $currentversion, $request);
+		
 		## e.g. presence, xlogin, help - ignoring these for now
 #			print "not a tool path: $request\n";
 	}
