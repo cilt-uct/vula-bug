@@ -30,7 +30,7 @@ if ($toolid =~ /([a-z.:]+)/) {
 	$toolid = "unknown";
 }
 
-if ($siteid =~ /([a-z0-9.-]+)/) {
+if ($siteid =~ /([!A-Za-z0-9.-]+)/) {
 	$siteid = $1;
 } else {
 	$siteid = "unknown";
