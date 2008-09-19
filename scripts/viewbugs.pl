@@ -23,6 +23,7 @@ my $toolid = $q->param('tool');
 my $siteid = $q->param('site');
 my $user = $q->param('user');
 my $period= $q->param('period');
+my $comment= $q->param('comment');
 
 if ($toolid =~ /([a-z.:]+)/) {
 	$toolid = $1;
@@ -49,18 +50,26 @@ if ($period =~ /([0-9]+)/) {
 	$period = 1;
 }
 
-# Get tool info for placement ID
-my $toolreg = $dbh->selectall_hashref("SELECT REGISTRATION, DESCRIPTION, JIRA_PROJ, JIRA_COMP FROM SAKAI_TOOLS WHERE REGISTRATION='$toolid'", "REGISTRATION");
+if ($comment =~ /([0-9]+)/) {
+	$comment = $1;
+} else {
+	$comment = 0;
+}
 
 my $jira_proj = "";
 my $jira_comp = "";
 my $tooldesc = "";
 my $bugs_desc;
 
-if (defined($toolreg->{$toolid})) {
-	$jira_proj = $toolreg->{$toolid}->{'JIRA_PROJ'};
-	$jira_comp = $toolreg->{$toolid}->{'JIRA_COMP'};
-	$tooldesc = escapeHTML($toolreg->{$toolid}->{'DESCRIPTION'});
+if ($toolid ne "unknown") {
+	# Get tool info for placement ID
+	my $toolreg = $dbh->selectall_hashref("SELECT REGISTRATION, DESCRIPTION, JIRA_PROJ, JIRA_COMP FROM SAKAI_TOOLS WHERE REGISTRATION='$toolid'", "REGISTRATION");
+
+	if (defined($toolreg->{$toolid})) {
+		$jira_proj = $toolreg->{$toolid}->{'JIRA_PROJ'};
+		$jira_comp = $toolreg->{$toolid}->{'JIRA_COMP'};
+		$tooldesc = escapeHTML($toolreg->{$toolid}->{'DESCRIPTION'});
+	}
 }
 
 my @headings;
@@ -90,6 +99,12 @@ if ($siteid ne "unknown") {
 	$bugs_desc = "Site: $siteid";
 }
 
+if ($comment == 1) {
+	@headings = ("ID", "Date", "User", "CausedBy", "CausedAt");
+	$bugs_table = query_table($dbh, "select BUG_ID, BUG_DATE, EID, CAUSED_BY, CAUSED_AT FROM SAKAI_BUGS WHERE COMMENT IS NOT NULL and (UNIX_TIMESTAMP(now()) - UNIX_TIMESTAMP(BUG_DATE)) < 86400*$period order by BUG_ID DESC", $scripturi, $period, $toolid, @headings);
+	$jira_link = "";
+	$bugs_desc = "Bugs with user comments";
+}
 
 print $q->header();
 
