@@ -1,0 +1,18 @@
+This set of scripts provides the capability to place Sakai's emailed bug reports into a database, and then view
+various metrics from the data.
+
+The metrics being generated are for each tool:
+
+1. Number of bugs in the given time period (24 hours, 7 days, etc.). Bugs are associated with specific tools through the /portal/tool/... URLs in the request path.
+
+2. Distinct bugs is the number of "different" bugs, as identified by the "caused at" line in the stack trace. This is a reasonably accurate measure.
+
+3. Affected users is the number of different users affected by bugs for the tool.
+
+4. Impact is a measure of bug reports and affected users per distinct tool bug. It's calculated as (bugs + affected users) / distinct bugs.
+
+5. Weighted impact is Impact weighted according to the number of affected users as a proportion of total affected users in the given time period.
+
+Weighted impact can be considered as a "return on effort" metric, i.e. given X known bugs across your entire Sakai deployment, which tool's bugs should you address first in order to have the greatest impact on end users.
+
+
