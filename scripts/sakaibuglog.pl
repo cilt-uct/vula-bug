@@ -1,8 +1,13 @@
 #! /usr/bin/perl
 
-## sakaibuglog.pl - archive Sakai bug reports to a database
+## sakaibuglog.pl - archive Sakai bug reports to a database. Requires Sakai 2-6-x or 2-5-x with SAK-14478
 
-## To create the required schema, use 
+## This is an email handler for emailed bug reports from the portal.error.email address specified in sakai.properties.
+
+## Pipe incoming mail to this script in the MTA (SMTP server) aliases file, e.g. for exim,
+## 	vula_bugs:              "|/usr/local/sakaiscripts/sakaibuglog.pl"
+
+## To create the required db schema, use 
 ##    pod2text sakaibuglog.pl | mysql dbname
 
 =begin text
@@ -25,8 +30,9 @@ CREATE TABLE `SAKAI_BUGS` (
   `USER_AGENT` varchar(255) default NULL,
   `CAUSED_BY` varchar(255) default NULL,
   `CAUSED_AT` varchar(255) default NULL,
+  `SAKAI_BUGID` varchar(255) default NULL,
   PRIMARY KEY  (`BUG_ID`)
-) ENGINE=InnoDB AUTO_INCREMENT=51 DEFAULT CHARSET=utf8
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 
 
 =cut
 
@@ -38,6 +44,8 @@ use strict;
 #####################
 # declare variables #
 #####################
+
+# die "I am: ". getlogin() . " / " . $>;
 
 require "/usr/local/sakaiconfig/dbbugs.pl";
 
@@ -109,6 +117,7 @@ $parser->filer->purge();
 # parse some details
 #################################
 
+my $bugid;
 my $eid;
 my $email;
 my $session;
@@ -122,6 +131,11 @@ my $comment;
 my $ua;
 my $causedby;
 my $causedat;
+
+if ($msgtxt =~ /bug-id:\s([A-Za-z0-9\@\.-]+)\s/) {
+  $bugid = $1;
+# print "found bug-id: $bugid\n";
+}
 
 if ($msgtxt =~ /user:\s([A-Za-z0-9\@\.]+)\s/) {
   $eid = $1;
@@ -193,7 +207,7 @@ while ($msgtxt =~ m/caused\sby:\s(.*)\n\s\s\s\sat\s(.*)\n/g) {
 
 # Don't save bug reports that have empty comments (as a pre-comment bug report will already have been saved)
 
-if (($digest ne "") && !($hascomment && $comment eq ""))  {
+if (($digest ne "") && !$hascomment)  {
 	### Connect to dbs
 
 	my $dbh = DBI->connect("DBI:mysql:database=$dbname;host=$host;port=3306", $user, $password)
@@ -201,17 +215,33 @@ if (($digest ne "") && !($hascomment && $comment eq ""))  {
 
 	## For now we just use the current date/time to avoid parsing the mm-ddd-yy date format
 
-	my $insertsql = "INSERT INTO SAKAI_BUGS (BUG_DATE, EID, EMAIL, SESSION, DIGEST, VERSION, REVISION, SERVER, REQPATH, BODY, COMMENT, USER_AGENT, CAUSED_BY, CAUSED_AT ) VALUES (NOW(), ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+	my $insertsql = "INSERT INTO SAKAI_BUGS (BUG_DATE, SAKAI_BUGID, EID, EMAIL, SESSION, DIGEST, VERSION, REVISION, SERVER, REQPATH, BODY, USER_AGENT, CAUSED_BY, CAUSED_AT ) VALUES (NOW(), ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 	my $sth = $dbh->prepare($insertsql) or die "Couldn't prepare statement: " . $dbh->errstr;
 
-	$sth->execute($eid, $email, $session, $digest, $version, $revision, $server, $reqpath, $msgtxt, $comment, $ua, $causedby, $causedat);
+	$sth->execute($bugid, $eid, $email, $session, $digest, $version, $revision, $server, $reqpath, $msgtxt, $ua, $causedby, $causedat);
 
 	$sth->finish;
 	$dbh->disconnect;
 
 #	print "Saved in db.\n";
-} else {
-#	print "Not saved in db.\n";
+} 
+
+# If this has a comment and a bug id, update the database with the comment
+
+if (($bugid ne "") && $hascomment && ($comment ne "")) {
+	### Connect to dbs
+
+	my $dbh = DBI->connect("DBI:mysql:database=$dbname;host=$host;port=3306", $user, $password)
+        || die "Could not connect to bug database $dbname: $DBI::errstr";
+
+	my $updatesql = "UPDATE SAKAI_BUGS SET COMMENT = ? WHERE SAKAI_BUGID = ?";
+	my $sth = $dbh->prepare($updatesql) or die "Couldn't prepare statement: " . $dbh->errstr;
+
+	$sth->execute($comment, $bugid);
+
+	$sth->finish;
+	$dbh->disconnect;
+
 }
 
 ## functions ##

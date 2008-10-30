@@ -1,6 +1,6 @@
 #! /usr/bin/perl
 
-# Populate tool id in SAKAI_BUGS table
+# Populate tool id in SAKAI_BUGS table. Run this periodically (e.g. every few hours) from cron.
 #
 
 use DBI;
