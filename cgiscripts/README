@@ -1,0 +1,17 @@
+Put these scripts in a location on a webserver which is protected by authentication (e.g. basic auth).
+
+Sample config for apache2:
+
+# Bug scripts
+<Location /mrtg/scripts/>
+   AuthType Basic
+   AuthName "Sakai Bug Info"
+   AuthUserFile /etc/apache2/stats-auth-file
+   require valid-user
+</Location>
+
+<Directory /srv/www/vhosts/mrtg/scripts>
+   Options +ExecCGI
+   AddHandler cgi-script .pl
+</Directory>
+
