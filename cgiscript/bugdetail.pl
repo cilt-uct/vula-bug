@@ -4,18 +4,20 @@ use strict;
 use CGI qw/escapeHTML unescapeHTML/;
 use DBI;
 
-require '/usr/local/sakaiscripts/alerts.pl';
-require '/usr/local/sakaiconfig/vula_bugs_auth.pl';
 require '/srv/www/vhosts/mrtg/scripts/jira.pl';
+require '/srv/www/vhosts/mrtg/scripts/timestamp.pl';
+
+require '/usr/local/sakaiconfig/vula_bugs_auth.pl';
+
+my $service = "Vula";
+my $service_prefix = "https://vula.uct.ac.za";
+my $css = "$service_prefix/library/skin/bugs.css";
 
 (my $dbname, my $dbhost, my $username, my $password) = getBugsDbConfig();
 (my $date, my $time) = &time_stamp();
 
 my $dbh = DBI->connect("DBI:mysql:database=$dbname;host=$dbhost;port=3306", $username, $password)
         || die "Could not connect to database: $DBI::errstr";
-
-my $service = "Vula";
-my $service_prefix = "https://vula.uct.ac.za";
 
 my $q = new CGI;                        # create new CGI object
 
@@ -28,11 +30,12 @@ if ($bugid =~ /([0-9]+)/) {
 	$bugid = 100;
 }
 
-# Bug bug info
-my $buginfo= $dbh->selectall_hashref("SELECT BUG_ID, TOOL, SITE_ID, BODY FROM SAKAI_BUGS WHERE BUG_ID=$bugid", "BUG_ID");
+# Bug info
+my $buginfo= $dbh->selectall_hashref("SELECT BUG_ID, TOOL, SITE_ID, BODY, COMMENT FROM SAKAI_BUGS WHERE BUG_ID=$bugid", "BUG_ID");
 
 my $toolid = $buginfo->{$bugid}->{'TOOL'};
 my $bug_body = escapeHTML($buginfo->{$bugid}->{'BODY'});
+my $bug_comment = escapeHTML($buginfo->{$bugid}->{'COMMENT'});
 my $siteid = $buginfo->{$bugid}->{'SITE_ID'};
 
 # Get tool info for placement ID
@@ -59,6 +62,10 @@ if ($siteid ne "null") {
 	$tool_link = "<a href=\"$service_prefix/portal/directtool/$toolid?sakai.site=$siteid\" target=\"_blank\">$toolid</a>";
 }
 
+if ($bug_comment ne "") {
+  $bug_comment = "Comment:<br/>$bug_comment<br/><br>";
+}
+
 print $q->header();
 
 print <<HTML;
@@ -66,7 +73,7 @@ print <<HTML;
 <html>
 <HEAD>
 <TITLE>$service Bug Details: $bugid ($tooldesc)</TITLE>
-<link rel="stylesheet" type="text/css" href="https://vula.uct.ac.za/library/skin/bugs.css" />
+<link rel="stylesheet" type="text/css" href="$css" />
 </HEAD>
 <body style="padding:0.3em;">
 <h2>$service Bug Summary</h2>
@@ -88,6 +95,7 @@ print <<HTML;
 <table id="bugDetailTable" class="detail" border="0" cellpadding="0" cellspacing="1">
 <tr>
 <td class="Body"><pre>
+$bug_comment
 $bug_body
 </pre></td>
 </tr>

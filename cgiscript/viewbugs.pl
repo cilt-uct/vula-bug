@@ -4,9 +4,10 @@ use strict;
 use CGI qw/escapeHTML/;
 use DBI;
 
-require '/usr/local/sakaiscripts/alerts.pl';
-require '/usr/local/sakaiconfig/vula_bugs_auth.pl';
 require '/srv/www/vhosts/mrtg/scripts/jira.pl';
+require '/srv/www/vhosts/mrtg/scripts/timestamp.pl';
+
+require '/usr/local/sakaiconfig/vula_bugs_auth.pl';
 
 (my $dbname, my $dbhost, my $username, my $password) = getBugsDbConfig();
 (my $date, my $time) = &time_stamp();
@@ -15,6 +16,8 @@ my $dbh = DBI->connect("DBI:mysql:database=$dbname;host=$dbhost;port=3306", $use
         || die "Could not connect to database: $DBI::errstr";
 
 my $service = "Vula";
+my $service_prefix = "https://vula.uct.ac.za";
+my $css = "$service_prefix/library/skin/bugs.css";
 
 my $q = new CGI;                        # create new CGI object
 
@@ -113,7 +116,7 @@ print <<HTML;
 <html>
 <HEAD>
 <TITLE>$service Tool Bugs: $toolid : $period day(s)</TITLE>
-<link rel="stylesheet" type="text/css" href="https://vula.uct.ac.za/library/skin/bugs.css" />
+<link rel="stylesheet" type="text/css" href="$css" />
 <script language="JavaScript" src="jquery-latest.js"></script>
 <script language="JavaScript" src="jquery.tablesorter.js"></script>
 <script language="JavaScript">
