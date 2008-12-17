@@ -1,0 +1,179 @@
+/* bugs.css : copied from library/skin/default/tool.css for bug summary*/
+
+/*SECTION 1 GENERIC SELECTORS*/
+body{
+	font-family: 'Trebuchet MS',Verdana,Geneva,Arial,Helvetica,sans-serif;
+	font-size: 80%;
+}	
+
+hr.itemSeparator{
+	height: 1px;
+	border-color: #ccc;
+	border-style: solid;
+	border-width: 1px 0 0 0;
+}
+
+/*SECTION 2 LINKS*/
+a:link{
+	color: #0080C0;
+	text-decoration: none;
+}
+
+a:visited{
+	color: #0080C0;
+	text-decoration: none;
+}
+
+a:hover,a:active{
+	color: #0080C0;
+	text-decoration: underline !important;
+}
+
+a:focus{
+	color:#0080C0;
+	text-decoration: underline !important;
+}
+
+/*some links are jscripted so the href is the same - cannot provide visited functionality - so make both the same*/
+/*see: list of assignments - the cells are classed with "specialLink" */ 
+.specialLink a:link,.specialLink a:visited{
+	color: #0080C0;
+	text-decoration: none;
+}
+
+table.overview {
+	width: 32em;
+}
+
+table.overview tr:hover{
+	background-color: #F5FAFC;
+}
+
+table.overview td {
+	border-bottom: 1px solid #eee;
+	/*border-top: 1px solid #eee; */
+	padding: 0em 0.5em 0em 0.5em;
+	font-size: 90%;
+	width: 3em;
+	text-align: right;
+}
+
+table.overview td.Tool {
+	width: 20em;
+	text-align: left;
+}
+
+table.overview th {
+	font-size: 75%;
+	vertical-align: top;
+}
+
+table.overview th.Tool {
+	font-size: 75%;
+	vertical-align: top;
+	text-align: left;
+}
+	
+	
+/*headers are used in many places for structuring things semantically - these are the plain headers - below there are others contextually defined*/
+h2,h6{
+	color: #555;
+	padding: 0;
+	font-weight: bold;
+	font-family: 'Trebuchet MS',Arial,Helvetica,sans-serif;
+	margin: 1em 0 ;
+	background-color: transparent !important;
+}
+
+h2{
+	font-size: 130%;
+}
+
+h3{
+	font-size: 110%;
+}
+
+h4,h5,h6 {
+	font-size: 100%;
+}
+
+h3,h4,h5{
+color: #555;
+padding: 0;
+font-weight: bold;
+font-family: Arial,Helvetica,sans-serif;
+margin: 1em 0 1em 0;
+background-color: transparent !important;
+}
+
+/*SECTION 7 INPUTS*/
+/*see: create any item*/
+label{
+	color: #000;
+	font-family: Arial,Helvetica,sans-serif;
+	font-weight: normal;
+	margin-top: .3em;
+}
+
+/* tables */
+table.tablesorter {
+	font-family:arial;
+	background-color: #CDCDCD;
+	margin:10px 0pt 15px;
+	font-size: 8pt;
+	width: 100%;
+	text-align: left;
+}
+table.tablesorter thead tr th, table.tablesorter tfoot tr th {
+	background-color: #e6EEEE;
+	border: 1px solid #FFF;
+	font-size: 8pt;
+	padding: 4px;
+}
+table.tablesorter thead tr .header {
+	background-image: url(/mrtg/scripts/bg.gif);
+	background-repeat: no-repeat;
+	background-position: center right;
+	cursor: pointer;
+}
+table.tablesorter tbody td {
+	color: #3D3D3D;
+	padding: 4px;
+	background-color: #FFF;
+	vertical-align: top;
+}
+table.tablesorter tbody tr.odd td {
+	background-color:#F0F0F6;
+}
+table.tablesorter thead tr .headerSortUp {
+	background-image: url(/mrtg/scripts/asc.gif);
+}
+table.tablesorter thead tr .headerSortDown {
+	background-image: url(/mrtg/scripts/desc.gif);
+}
+table.tablesorter thead tr .headerSortDown, table.tablesorter thead tr .headerSortUp {
+	background-color: #8dbdd8;
+}
+
+table.tablesorter td.Body {
+}
+
+table.detail {
+	width: 100%;
+}
+
+table.detail td{
+	border-bottom: 1px solid #eee;
+	padding: 0em 0.5em 0em 0.5em;
+	font-size: 100%;
+}
+
+pre {
+ white-space: -moz-pre-wrap;
+ font-size: 110%;
+}
+
+body {
+/* padding: 1em; */
+}
+
