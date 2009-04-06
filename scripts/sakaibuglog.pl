@@ -137,12 +137,12 @@ if ($msgtxt =~ /bug-id:\s([A-Za-z0-9\@\.-]+)\s/) {
 # print "found bug-id: $bugid\n";
 }
 
-if ($msgtxt =~ /user:\s([A-Za-z0-9\@\.]+)\s/) {
+if ($msgtxt =~ /user:\s([A-Za-z0-9\@\._]+)\s/) {
   $eid = $1;
 # print "found eid: $eid\n";
 }
 
-if ($msgtxt =~ /email:\s([A-Za-z0-9\@\.]+)/) {
+if ($msgtxt =~ /email:\s([A-Za-z0-9\@\._]+)/) {
   $email = $1;
 # print "found email: $email\n";
 }
