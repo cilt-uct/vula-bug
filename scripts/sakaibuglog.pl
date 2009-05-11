@@ -199,6 +199,14 @@ while ($msgtxt =~ m/caused\sby:\s(.*)\n\s\s\s\sat\s(.*)\n/g) {
 # print "found caused-by: $causedby ## at $causedat\n";
 }
 
+if (!defined($causedby)) {
+  # Look for an RSF-style caused-by
+  while ($msgtxt =~ m/-->\s(.*)\n\s\s\s\sat\s(.*)\n/g) {
+    $causedby = $1;
+    $causedat = $2;
+  # print "found RSF caused-by: $causedby ## at $causedat\n";
+  }
+}
 #print "End.\n";
 
 ###################################################
