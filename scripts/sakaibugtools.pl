@@ -13,8 +13,6 @@ require "/usr/local/sakaiconfig/dbbugs.pl";
 
 my $debug = 0;
 
-my $currentversion = "2.5";
-
 ### Connect to dbs
 
 $dbh1 = DBI->connect("DBI:mysql:database=$dbname1;host=$host1;port=3306", $user1, $password1) 
@@ -26,13 +24,13 @@ $dbh2 = DBI->connect("DBI:mysql:database=$dbname2;host=$host2;port=3306", $user2
 ### Pull in all the production tool IDs
   my $toolreg = $dbh1->selectall_hashref('SELECT TOOL_ID, SITE_ID, REGISTRATION FROM SAKAI_SITE_TOOL', 'TOOL_ID');
 
-  my $eventsql = "select distinct REQPATH from SAKAI_BUGS WHERE VERSION=? and TOOL is NULL";
+  my $eventsql = "select distinct REQPATH from SAKAI_BUGS WHERE VERSION='2.6' and TOOL is NULL";
 
   my $sth1 = $dbh2->prepare($eventsql) or die "Couldn't prepare statement: " . $dbh2->errstr;
-  $sth1->execute($currentversion)             # Execute the query
+  $sth1->execute()             # Execute the query
      or die "Couldn't execute statement: " . $sth->errstr;
 
-  my $updsql = "update SAKAI_BUGS SET TOOL = ?, SITE_ID = ? WHERE VERSION = ? AND REQPATH LIKE ?";
+  my $updsql = "update SAKAI_BUGS SET TOOL = ?, SITE_ID = ? WHERE REQPATH LIKE ?";
   my $sth2 = $dbh2->prepare($updsql)  or die "Couldn't prepare statement: " . $dbh2->errstr;
 
   # Find tool names for placement IDs
@@ -50,7 +48,7 @@ $dbh2 = DBI->connect("DBI:mysql:database=$dbname2;host=$host2;port=3306", $user2
                 my $siteid = $toolreg->{$toolid}->{'SITE_ID'};
 
 		if (defined($registration) && $registration ne "") {
-			$sth2->execute($registration, $siteid, $currentversion, "/portal/tool/$toolid%");
+			$sth2->execute($registration, $siteid, "/portal/tool/$toolid%");
 
 #		print "  got tool id: $toolid site id: $siteid reg: $registration\n";
 
@@ -66,7 +64,7 @@ $dbh2 = DBI->connect("DBI:mysql:database=$dbname2;host=$host2;port=3306", $user2
 			$registration = "url:" . $pathelem[1];
 		}
 
-		$sth2->execute($registration, null, $currentversion, $request);
+		$sth2->execute($registration, null, $request);
 		
 		## e.g. presence, xlogin, help - ignoring these for now
 #			print "not a tool path: $request\n";
