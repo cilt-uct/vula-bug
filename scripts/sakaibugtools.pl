@@ -13,7 +13,7 @@ require "/usr/local/sakaiconfig/dbbugs.pl";
 
 my $debug = 0;
 
-my $currentversion = "10";
+my $currentversion = "11";
 
 ### Connect to dbs
 
@@ -24,9 +24,11 @@ $dbh2 = DBI->connect("DBI:mysql:database=$dbname2;host=$host2;port=3306", $user2
 	|| die "Could not connect to bugs database $dbname2: $DBI::errstr";
 
 ### Pull in all the production tool IDs
-#print "geting all tool reg...";
+
+  if ($debug) { print "getting all tool reg...\n"; }
   my $toolreg = $dbh1->selectall_hashref('SELECT TOOL_ID, SITE_ID, REGISTRATION FROM SAKAI_SITE_TOOL', 'TOOL_ID');
-#print "done\n";
+
+  if ($debug) { print "getting bug reports...\n"; }
   my $eventsql = "select distinct REQPATH from SAKAI_BUGS WHERE VERSION=? and TOOL is NULL";
 
   my $sth1 = $dbh2->prepare($eventsql) or die "Couldn't prepare statement: " . $dbh2->errstr;
@@ -41,7 +43,7 @@ $dbh2 = DBI->connect("DBI:mysql:database=$dbname2;host=$host2;port=3306", $user2
 
 	my $request = $data[0];
 
-	#print "got path: " . $data[0] . "\n";
+	if ($debug) { print "got path: " . $data[0] . "\n"; }
 
 	if ($request =~ /^\/portal\/tool\/([A-Za-z0-9-!]*)[?]*/) {
 		my $toolid = $1;
@@ -56,16 +58,17 @@ $dbh2 = DBI->connect("DBI:mysql:database=$dbname2;host=$host2;port=3306", $user2
 		   #print "  got tool id: $toolid site id: $siteid reg: $registration\n";
 
 		}
-	} elsif ($request =~ /^\/portal\/pda\/([A-Za-z0-9-!]*)[?]*\/tool\/([A-Za-z0-9-!]*)[?]*/) {
+	} elsif ($request =~ /^\/portal\/site\/([~A-Za-z0-9-!]*)[?]*\/tool\/([A-Za-z0-9-!]*)[?]*/) {
 		my $toolid = $2;
-		#print "  got pda site id: $1 tool id: $2\n";
+
+		if ($debug) { print "  got site id: $1 tool id: $2\n"; }
 
 		my $registration = $toolreg->{$toolid}->{'REGISTRATION'};
                 my $siteid = $toolreg->{$toolid}->{'SITE_ID'};
 
 		if (defined($registration) && $registration ne "") {
-			$sth2->execute($registration, $siteid, $currentversion, "/portal/pda/%/tool/$toolid%");
-		   #print "  got tool id: $toolid site id: $siteid reg: $registration\n";
+			$sth2->execute($registration, $siteid, $currentversion, "/portal/site/%/tool/$toolid%");
+		   	if ($debug) { print "  got tool id: $toolid site id: $siteid reg: $registration\n"; }
 		}
 	
 	} else {
@@ -81,7 +84,7 @@ $dbh2 = DBI->connect("DBI:mysql:database=$dbname2;host=$host2;port=3306", $user2
 		$sth2->execute($registration, null, $currentversion, $request);
 		
 		## e.g. presence, xlogin, help - ignoring these for now
-#			print "not a tool path: $request\n";
+		if ($debug) { print "not a tool path: $request\n"; }
 	}
 
   }

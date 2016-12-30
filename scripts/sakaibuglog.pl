@@ -172,7 +172,7 @@ if ($msgtxt =~ /time:\s([A-Za-z0-9-]+)\s(\d{2}:\d{2}:\d{2})/) {
 # print "found datetime: $datetime\n";
 }
 
-if ($msgtxt =~ /request-path:\s([A-Za-z0-9.?=_%&\/-]+)/) {
+if ($msgtxt =~ /request-path:\s([A-Za-z0-9~.?=_%&\/-]+)/) {
   $reqpath = $1;
 # print "found reqpath: $reqpath\n";
 }
