@@ -20,7 +20,7 @@ my $currentversion = "11";
 $dbh1 = DBI->connect("DBI:mysql:database=$dbname1;host=$host1;port=3306", $user1, $password1) 
 	|| die "Could not connect to production database $dbname1: $DBI::errstr";
 
-$dbh2 = DBI->connect("DBI:mysql:database=$dbname2;host=$host2;port=3306", $user2, $password2)
+$dbh2 = DBI->connect("DBI:mysql:database=$dbname2;host=$host2;port=3306;mysql_socket=/var/lib/mysql/mysql.sock", $user2, $password2)
 	|| die "Could not connect to bugs database $dbname2: $DBI::errstr";
 
 ### Pull in all the production tool IDs
