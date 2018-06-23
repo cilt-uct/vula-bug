@@ -218,7 +218,7 @@ if (!defined($causedby)) {
 if (($digest ne "") && !$hascomment)  {
 	### Connect to dbs
 
-	my $dbh = DBI->connect("DBI:mysql:database=$dbname;host=$host;port=3306", $user, $password)
+	my $dbh = DBI->connect("DBI:mysql:database=$dbname;host=$host;port=3306;mysql_socket=/var/lib/mysql/mysql.sock", $user, $password)
         || die "Could not connect to bug database $dbname: $DBI::errstr";
 
 	## For now we just use the current date/time to avoid parsing the mm-ddd-yy date format
@@ -239,7 +239,7 @@ if (($digest ne "") && !$hascomment)  {
 if (($bugid ne "") && $hascomment && ($comment ne "")) {
 	### Connect to dbs
 
-	my $dbh = DBI->connect("DBI:mysql:database=$dbname;host=$host;port=3306", $user, $password)
+	my $dbh = DBI->connect("DBI:mysql:database=$dbname;host=$host;port=3306;mysql_socket=/var/lib/mysql/mysql.sock", $user, $password)
         || die "Could not connect to bug database $dbname: $DBI::errstr";
 
 	my $updatesql = "UPDATE SAKAI_BUGS SET COMMENT = ? WHERE SAKAI_BUGID = ?";
