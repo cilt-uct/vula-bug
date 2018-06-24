@@ -87,7 +87,7 @@ print <<HTML;
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
 <title>$service Bug Summary</title>
-<link rel="stylesheet" type="text/css" href="https://vula.uct.ac.za/library/skin/bugs.css" />
+<link rel="stylesheet" type="text/css" href="https://vula.uct.ac.za/library/content/uct/css/bugs.css" />
 </head>
 <body>
 <h2>$service Bug Summary</h2>
