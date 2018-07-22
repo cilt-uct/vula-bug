@@ -4,14 +4,14 @@ use strict;
 use CGI qw/escapeHTML unescapeHTML/;
 use DBI;
 
-require '/srv/www/vhosts/mrtg/scripts/jira.pl';
-require '/srv/www/vhosts/mrtg/scripts/timestamp.pl';
+require '/srv/www/vhosts/vula.uct.ac.za/mrtg/scripts/jira.pl';
+require '/srv/www/vhosts/vula.uct.ac.za/mrtg/scripts/timestamp.pl';
 
 require '/usr/local/sakaiconfig/vula_bugs_auth.pl';
 
 my $service = "Vula";
 my $service_prefix = "https://vula.uct.ac.za";
-my $css = "$service_prefix/library/skin/bugs.css";
+my $css = "$service_prefix/library/content/uct/css/bugs.css";
 
 (my $dbname, my $dbhost, my $username, my $password) = getBugsDbConfig();
 (my $date, my $time) = &time_stamp();
