@@ -4,8 +4,8 @@ use strict;
 use CGI qw/escapeHTML/;
 use DBI;
 
-require '/srv/www/vhosts/mrtg/scripts/jira.pl';
-require '/srv/www/vhosts/mrtg/scripts/timestamp.pl';
+require '/srv/www/vhosts/vula.uct.ac.za/mrtg/scripts/jira.pl';
+require '/srv/www/vhosts/vula.uct.ac.za/mrtg/scripts/timestamp.pl';
 
 require '/usr/local/sakaiconfig/vula_bugs_auth.pl';
 
@@ -17,7 +17,7 @@ my $dbh = DBI->connect("DBI:mysql:database=$dbname;host=$dbhost;port=3306", $use
 
 my $service = "Vula";
 my $service_prefix = "https://vula.uct.ac.za";
-my $css = "$service_prefix/library/skin/bugs.css";
+my $css = "$service_prefix/library/content/uct/css//bugs.css";
 
 my $q = new CGI;                        # create new CGI object
 
@@ -28,7 +28,7 @@ my $user = $q->param('user');
 my $period= $q->param('period');
 my $comment= $q->param('comment');
 
-if ($toolid =~ /([a-z.:]+)/) {
+if ($toolid =~ /([a-z.:-]+)/) {
 	$toolid = $1;
 } else {
 	$toolid = "unknown";
