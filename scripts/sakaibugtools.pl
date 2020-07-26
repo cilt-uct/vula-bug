@@ -13,7 +13,7 @@ require "/usr/local/sakaiconfig/dbbugs.pl";
 
 my $debug = 0;
 
-my $currentversion = "12";
+my $currentversion = "20";
 
 ### Connect to dbs
 
