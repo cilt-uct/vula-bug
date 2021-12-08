@@ -15,4 +15,55 @@ The metrics being generated are for each tool:
 
 Weighted impact can be considered as a "return on effort" metric, i.e. given X known bugs across your entire Sakai deployment, which tool's bugs should you address first in order to have the greatest impact on end users.
 
+## Install on Server
 
+### 1. Generating a new SSH key (If it doesn't exist already)
+
+1. Open Terminal (as root).
+2. Paste the text below, substituting in your GitHub email address.
+```
+ssh-keygen -t rsa -b 4096 -C "your_email@example.com"
+```
+This creates a new ssh key, using the provided email as a label.
+```
+> Generating public/private rsa key pair.
+```
+3. When you're prompted to "Enter a file in which to save the key," press Enter. This accepts the default file location.
+```
+> Enter a file in which to save the key (/root/.ssh/id_rsa): /root/.ssh/vula_bugs
+```
+4. At the prompt, type a secure passphrase or press Enter for no passphrase.
+```
+> Enter passphrase (empty for no passphrase): [Type a passphrase]
+> Enter same passphrase again: [Type passphrase again]
+```
+5. Print public key
+```
+cat /root/.ssh/vula_bugs.pub
+```
+6. Add the SSH key to your GitHub account (as described below).
+
+### 2. Adding a new SSH key to your GitHub account
+
+1. Copy the SSH key to your clipboard.
+2. Open `https://github.com/cilt-uct/vula-bug/settings/keys`.
+3. Click "Add deploy key".
+4. Give it the name of the server that will use the key (title).
+5. Paste in the key from the terminal output (above).
+6. DO NOT tick the "Allow write access"
+7. Click "Add key"
+
+### 3. Clone the repository to the server
+```
+git clone https://github.com/cilt-uct/vula-bug /usr/local/vula-bug
+```
+NOTE: you might need to use your own credentials for getting the repository
+
+### 4. Change remote server on server
+```
+cd /usr/local/vula-bug
+git remote -v
+git remote set-url origin git@github.com:cilt-uct/vula-bug.git
+./get.sh
+```
+NOTE: on `git fetch` it might ask you to authenticate `github.com`, just type `yes` and hit Enter.
