@@ -5,11 +5,10 @@
 
 use DBI;
 
-require "/usr/local/sakaiconfig/dbauth.pl";
-require "/usr/local/sakaiconfig/dbbugs.pl";
+require '/usr/local/serverconfig/auth.pl';
 
-(my $host1, my $dbname1, my $user1, my $password1)= getProductionDbAuth ();
-(my $host2, my $dbname2, my $user2, my $password2)= getBugDbAuth ();
+my ($host1, $dbname1, $user1, $password1) = getVulaDbAuth();
+my ($host2, $dbname2, $user2, $password2) = getBugDbAuth();
 
 my $debug = 0;
 
