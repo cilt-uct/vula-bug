@@ -12,7 +12,7 @@ my ($host2, $dbname2, $user2, $password2) = getBugDbAuth();
 
 my $debug = 0;
 
-my $currentversion = "20";
+my $currentversion = "21";
 
 ### Connect to dbs
 
