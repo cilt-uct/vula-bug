@@ -7,7 +7,7 @@ branch=${branch:-$branch_name}
 
 read -p "Github Username (not email): " username
 
-git push https://$username@github.com/cilt-uct/vula-config.git $branch
+git push https://$username@github.com/cilt-uct/vula-bug.git $branch
 
 # if [ $? -eq 0 ]; then
 #   bash /usr/local/scripts/get.sh
